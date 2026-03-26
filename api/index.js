@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname, '..')));
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 // Secure API route that your frontend will call
-app.post('/api/chat', async (req, res) => {
+// Accepts both /api/chat (local) and /chat (Vercel automatic rewrite)
+app.post(['/api/chat', '/chat'], async (req, res) => {
     try {
         const { messages } = req.body;
         
