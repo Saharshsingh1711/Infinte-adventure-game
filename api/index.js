@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -8,8 +9,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve your frontend files (index.html, style.css, etc.)
-app.use(express.static('.'));
+// Serve your frontend files for local development
+app.use(express.static(path.join(__dirname, '..')));
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
@@ -48,8 +49,14 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`\n🚀 Game Server is running!`);
-    console.log(`👉 Open http://localhost:${PORT} in your browser to play.\n`);
-});
+// Only listen on a port if we are running locally
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`\n🚀 Game Server is running!`);
+        console.log(`👉 Open http://localhost:${PORT} in your browser to play.\n`);
+    });
+}
+
+// Export the Express app so Vercel can run it as a serverless function
+module.exports = app;
